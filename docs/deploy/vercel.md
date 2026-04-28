@@ -163,7 +163,7 @@ Open Vercel's Runtime Logs for the project. Most common causes:
 - `DATABASE_URL` missing `?sslmode=require` (required by Neon / Supabase)
 - `pgvector` extension not enabled in the database
 - Build completed before `DATABASE_URL` was set — redeploy after adding the
-  env var so `vercel.json`'s `pnpm migrate && pnpm build` can see it
+  env var so `vercel.json`'s `pnpm build:vercel` can see it
 
 ### OAuth "redirect_uri_mismatch"
 
