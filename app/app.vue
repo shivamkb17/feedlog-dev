@@ -9,5 +9,5 @@ import 'vue-sonner/style.css'
     <NuxtPage />
   </NuxtLayout>
   <ConfirmDialogProvider />
-  <Toaster position="bottom-right" :duration="3000" rich-colors close-button />
+  <Toaster position="top-center" :duration="3000" rich-colors close-button />
 </template>

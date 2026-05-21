@@ -2,6 +2,7 @@
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import '~/assets/css/md-editor-preview.css'
+import { toast } from 'vue-sonner'
 import { sanitizeAttachmentHtml } from '~/utils/attachment';
 
 
@@ -280,6 +281,17 @@ async function handleDeleteComment(commentId: string) {
 watch(commentSort, () => {
   store.fetchComments(props.slug, commentSort.value)
 })
+
+async function handleShare() {
+  // Canonical post URL — independent of current location (post may be opened in a modal)
+  const url = `${window.location.origin}/p/${props.slug}`
+  try {
+    await navigator.clipboard.writeText(url)
+    toast.success('Link copied to clipboard')
+  } catch {
+    toast.error('Failed to copy link')
+  }
+}
 </script>
 
 <template>
@@ -474,8 +486,10 @@ watch(commentSort, () => {
           </div>
         </div>
         <div class="pt-2 flex flex-col gap-2">
+          <!-- Subscribe to Updates — hidden until the notification backend lands; unhide when ready
           <Button variant="secondary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''"><Icon name="lucide:bell" size="18" /> Subscribe to Updates</Button>
-          <Button variant="outline" class="text-primary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''"><Icon name="lucide:share-2" size="18" /> Share Request</Button>
+          -->
+          <Button variant="outline" class="text-primary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''" @click="handleShare"><Icon name="lucide:share-2" size="18" /> Share Request</Button>
         </div>
       </div>
       <SimilarPostsPanel v-if="post.id && !isMerged" :post-id="post.id" :is-admin="isOrgManager" @merge="handleSimilarMerge" />
