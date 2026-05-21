@@ -486,7 +486,9 @@ async function handleShare() {
           </div>
         </div>
         <div class="pt-2 flex flex-col gap-2">
+          <!-- Subscribe to Updates — hidden until the notification backend lands; unhide when ready
           <Button variant="secondary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''"><Icon name="lucide:bell" size="18" /> Subscribe to Updates</Button>
+          -->
           <Button variant="outline" class="text-primary" :disabled="isMerged" :class="isMerged ? 'opacity-50 cursor-not-allowed' : ''" @click="handleShare"><Icon name="lucide:share-2" size="18" /> Share Request</Button>
         </div>
       </div>
