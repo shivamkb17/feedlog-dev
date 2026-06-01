@@ -3,13 +3,20 @@ const { signOut } = useAuth()
 const { data: session } = await useAuthSession()
 
 const user = computed(() => session.value?.user)
+// SSO sessions (signed in via the customer's product) are end-user only.
+const isSsoSession = computed(
+  () => !!(session.value as { session?: { ssoOrgId?: string | null } } | null)?.session?.ssoOrgId,
+)
 // Dashboard entry visibility matches the /dashboard middleware: any org
 // member (owner / manager / contributor) gets in. Do NOT gate on
 // `user.role === 'admin'` — that's the legacy better-auth admin plugin
 // field, no longer consulted now that access is driven by org-membership
 // role.
 const orgCtx = useOrgContext()
-const canEnterDashboard = computed(() => !!user.value && !!orgCtx.value.role)
+// An SSO session is end-user only and can never reach the dashboard (server
+// gates 403, /dashboard middleware redirects). Hide the entry too so we don't
+// dangle a link that dead-ends — even if this email is an org member.
+const canEnterDashboard = computed(() => !!user.value && !!orgCtx.value.role && !isSsoSession.value)
 
 // User initials as avatar fallback
 const initials = computed(() => {
@@ -23,6 +30,9 @@ watch(user, () => { avatarError.value = false })
 
 const { isOpen: showLoginModal } = useLoginModal()
 const showChangePassword = ref(false)
+
+// SSO sessions can't manage credentials — the backend blocks set/change-password
+// etc. Hide the control instead of offering an action that 403s.
 
 const navItems = [
   { label: 'Feedback', to: '/', icon: 'lucide:message-square' },
@@ -118,7 +128,7 @@ watch(() => route.path, () => { mobileNavOpen.value = false })
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem @click="showChangePassword = true">
+              <DropdownMenuItem v-if="!isSsoSession" @click="showChangePassword = true">
                 <Icon name="lucide:key-round" size="16" class="mr-2" />
                 Change Password
               </DropdownMenuItem>

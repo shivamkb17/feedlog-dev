@@ -7,6 +7,9 @@ export interface DashboardNavItem {
 export interface DashboardNav {
   mainNav: DashboardNavItem[]
   settingsNav: DashboardNavItem[]
+  // Advanced / integration surfaces. Rendered as a separate, collapsed-by-default
+  // section so it doesn't crowd the everyday Settings items.
+  developerNav: DashboardNavItem[]
 }
 
 export function useDashboardNav(): DashboardNav {
@@ -20,6 +23,9 @@ export function useDashboardNav(): DashboardNav {
       { label: 'Board',     to: '/dashboard/boards',              icon: 'lucide:settings-2' },
       { label: 'Members',   to: '/dashboard/settings/members',    icon: 'lucide:users' },
       { label: 'Workspace', to: '/dashboard/settings/workspace',  icon: 'lucide:building-2' },
+    ],
+    developerNav: [
+      { label: 'Single Sign-On', to: '/dashboard/developer/sso', icon: 'lucide:key-round' },
     ],
   }
 }

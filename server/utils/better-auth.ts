@@ -81,7 +81,7 @@ const emailVerification = hasEmailProvider
 
 // Build the orgList shape attached to every session via customSession plugin.
 // Cookie cache (60s) keeps this off the DB hot path; ≤60s staleness on role
-// changes is acceptable per tech.md §3.2.
+// changes is acceptable.
 async function loadOrgList(userId: string) {
   const rows = await db
     .select({
@@ -168,6 +168,13 @@ export function buildAuthConfig(overrides: AuthConfigOverrides = {}): BetterAuth
       ...(overrides.extraPlugins ?? []),
     ],
     session: {
+      additionalFields: {
+        // Product-SSO marker (see schemas/auth.ts session.ssoOrgId). Written by
+        // the /api/sso/jwt endpoint via internalAdapter.createSession override.
+        // input:false — clients can't forge it through the API; returned:true —
+        // surfaced in getSession so the UI can gate credential controls.
+        ssoOrgId: { type: 'string', required: false, input: false, returned: true },
+      },
       cookieCache: { enabled: true, maxAge: 60 },
     },
     databaseHooks: {
