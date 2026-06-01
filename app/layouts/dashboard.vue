@@ -20,12 +20,16 @@ async function handleSignOut() {
   navigateTo('/')
 }
 
-const { mainNav, settingsNav } = useDashboardNav()
+const { mainNav, settingsNav, developerNav } = useDashboardNav()
 
 // Mobile menu
 const mobileMenuOpen = ref(false)
 const route = useRoute()
 watch(() => route.path, () => { mobileMenuOpen.value = false })
+
+// Developer section: collapsed by default, but auto-expanded when the current
+// route lives inside it (so the active page stays visible).
+const developerOpen = ref(developerNav.some(item => route.path.startsWith(item.to)))
 </script>
 
 <template>
@@ -82,6 +86,31 @@ watch(() => route.path, () => { mobileMenuOpen.value = false })
             <div class="space-y-1">
               <NuxtLink
                 v-for="item in settingsNav"
+                :key="item.to"
+                :to="item.to"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-background hover:text-foreground transition-colors font-semibold"
+                active-class="!bg-secondary !text-primary !font-bold"
+              >
+                <Icon :name="item.icon" size="20" />
+                <span class="text-sm">{{ item.label }}</span>
+              </NuxtLink>
+            </div>
+          </div>
+          <div v-if="developerNav.length">
+            <button
+              class="w-full flex items-center justify-between px-3 mb-2 group"
+              @click="developerOpen = !developerOpen"
+            >
+              <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">Developer</span>
+              <Icon
+                :name="developerOpen ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+                size="14"
+                class="text-muted-foreground"
+              />
+            </button>
+            <div v-show="developerOpen" class="space-y-1">
+              <NuxtLink
+                v-for="item in developerNav"
                 :key="item.to"
                 :to="item.to"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-background hover:text-foreground transition-colors font-semibold"
@@ -170,6 +199,33 @@ watch(() => route.path, () => { mobileMenuOpen.value = false })
           <div class="space-y-1">
             <NuxtLink
               v-for="item in settingsNav"
+              :key="item.to"
+              :to="item.to"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-background hover:text-foreground transition-colors font-semibold"
+              active-class="!bg-secondary !text-primary !font-bold"
+            >
+              <Icon :name="item.icon" size="20" />
+              <span class="text-sm">{{ item.label }}</span>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Developer (collapsible, collapsed by default) -->
+        <div v-if="developerNav.length">
+          <button
+            class="w-full flex items-center justify-between px-3 mb-2 group"
+            @click="developerOpen = !developerOpen"
+          >
+            <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">Developer</span>
+            <Icon
+              :name="developerOpen ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+              size="14"
+              class="text-muted-foreground"
+            />
+          </button>
+          <div v-show="developerOpen" class="space-y-1">
+            <NuxtLink
+              v-for="item in developerNav"
               :key="item.to"
               :to="item.to"
               class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-background hover:text-foreground transition-colors font-semibold"

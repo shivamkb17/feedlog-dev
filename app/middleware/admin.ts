@@ -7,6 +7,14 @@ export default defineNuxtRouteMiddleware(async () => {
     return navigateTo('/')
   }
 
+  // SSO sessions are end-user only — never staff, even if this email is an org
+  // member. Server gates 403 regardless; bounce here too so the
+  // dashboard never half-renders before the API calls fail.
+  const ssoOrgId = (data.value as { session?: { ssoOrgId?: string | null } }).session?.ssoOrgId
+  if (ssoOrgId) {
+    return navigateTo('/')
+  }
+
   const orgList = (data.value as { orgList?: { role: string }[] }).orgList
   if (!orgList || orgList.length === 0) {
     return navigateTo('/')

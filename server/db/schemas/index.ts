@@ -17,6 +17,10 @@ export {
   memberRelations,
   invitationRelations,
 } from './auth'
+export {
+  organizationSso,
+  organizationSsoRelations,
+} from './sso'
 import { user, session, account, organization, member, invitation } from './auth'
 
 // Custom type for pgvector's vector column

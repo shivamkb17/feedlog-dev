@@ -37,6 +37,12 @@ export const session = pgTable(
     // organization plugin: tracks "last visited org" — UX convenience only,
     // never used for data isolation. event.context.orgId comes from host.
     activeOrganizationId: text("active_organization_id"),
+    // Set only on sessions minted by the product-SSO endpoint (/api/sso/jwt).
+    // Marks an end-user session whose email was asserted by the org (not
+    // verified by FeedLog): host-bound to this org, blocked from credential
+    // changes. Null for normal Google/GitHub/password logins. Declared as a
+    // better-auth session.additionalField in server/utils/better-auth.ts.
+    ssoOrgId: text("sso_org_id"),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
