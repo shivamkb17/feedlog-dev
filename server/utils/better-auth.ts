@@ -125,6 +125,13 @@ export interface AuthConfigOverrides {
   account?: BetterAuthOptions['account']
 }
 
+// Trusts the request's own Host, per-request — keeps sign-up zero-config
+// without baseURL getting stuck on whichever host asked first.
+export function defaultTrustedOrigins(request?: Request): string[] {
+  const host = request?.headers.get('host')
+  return host ? [`http://${host}`, `https://${host}`] : []
+}
+
 export function buildAuthConfig(overrides: AuthConfigOverrides = {}): BetterAuthOptions {
   const orgOpts = {
     ac,
@@ -156,7 +163,7 @@ export function buildAuthConfig(overrides: AuthConfigOverrides = {}): BetterAuth
     emailAndPassword,
     ...(emailVerification && { emailVerification }),
     socialProviders: mergedSocial,
-    ...(overrides.trustedOrigins && { trustedOrigins: overrides.trustedOrigins }),
+    trustedOrigins: overrides.trustedOrigins ?? defaultTrustedOrigins,
     ...(overrides.account && { account: overrides.account }),
     plugins: [
       admin(),
